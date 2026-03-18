@@ -119,6 +119,22 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'Backend is running' });
 });
 
+// 4. View All Users (Demo Route)
+app.get('/api/users', (req, res) => {
+    try {
+        const users = readUsers();
+        // Hide hashed passwords for security
+        const safeUsers = users.map(u => ({ 
+            id: u.id, 
+            username: u.username, 
+            createdAt: u.createdAt 
+        }));
+        res.json({ total: safeUsers.length, users: safeUsers });
+    } catch (err) {
+        res.status(500).json({ error: '服务器内部错误' });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`GourmetDrop API Server running on port ${PORT}`);
 });
