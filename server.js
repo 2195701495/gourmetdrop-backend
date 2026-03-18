@@ -11,7 +11,7 @@ const SECRET_KEY = process.env.JWT_SECRET || 'gourmetdrop_super_secret_key_produ
 
 // Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '2mb' })); // Support handling compressed Base64 avatar uploads
 
 // Database File (Simulating a DB with a local JSON file for zero-config persistence)
 const DB_FILE = path.join(__dirname, 'users.json');
