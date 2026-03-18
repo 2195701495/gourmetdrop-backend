@@ -180,6 +180,23 @@ app.put('/api/user/profile', (req, res) => {
 // Checkout & Payment Routes
 // -------------------------
 
+// 4.6 Get User Orders
+app.get('/api/orders', (req, res) => {
+    try {
+        const token = req.headers.authorization?.split(' ')[1];
+        if (!token) return res.status(401).json({ error: '未授权' });
+
+        const decoded = jwt.verify(token, SECRET_KEY);
+        const orders = readOrders();
+        
+        // Find orders belonging to user, sorted by newest first
+        const userOrders = orders.filter(o => o.userId === decoded.id).reverse();
+        res.json(userOrders);
+    } catch (err) {
+        res.status(401).json({ error: '无效令牌' });
+    }
+});
+
 // 5. Create Order
 app.post('/api/orders/create', (req, res) => {
     try {
