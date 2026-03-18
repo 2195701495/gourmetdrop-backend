@@ -147,6 +147,35 @@ app.get('/api/users', (req, res) => {
     }
 });
 
+// 4.5 Update Profile
+app.put('/api/user/profile', (req, res) => {
+    try {
+        const token = req.headers.authorization?.split(' ')[1];
+        if (!token) return res.status(401).json({ error: '未授权' });
+
+        const decoded = jwt.verify(token, SECRET_KEY);
+        const { nickname, avatar, birthday } = req.body;
+
+        const users = readUsers();
+        const userIndex = users.findIndex(u => u.id === decoded.id);
+        
+        if (userIndex === -1) return res.status(404).json({ error: '用户不存在' });
+
+        users[userIndex].nickname = nickname || users[userIndex].nickname;
+        users[userIndex].avatar = avatar || users[userIndex].avatar;
+        users[userIndex].birthday = birthday || users[userIndex].birthday;
+
+        writeUsers(users);
+
+        res.json({ 
+            message: '个人资料更新成功', 
+            user: users[userIndex]
+        });
+    } catch (err) {
+        res.status(401).json({ error: '登录失效，请重新登录' });
+    }
+});
+
 // -------------------------
 // Checkout & Payment Routes
 // -------------------------
